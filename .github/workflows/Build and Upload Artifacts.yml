@@ -56,7 +56,7 @@ jobs:
       continue-on-error: true
 
     - name: Build the project
-      run: pnpm desktop build
+      run: pnpm tauri build
 
     - name: Upload artifact
       if: success()
