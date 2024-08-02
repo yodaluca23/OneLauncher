@@ -1,0 +1,53 @@
+name: Build and Upload Artifacts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.15'
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Install pnpm
+      run: npm install -g pnpm@9.6.0
+
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: Prepare the build
+      run: pnpm prep
+
+    - name: Build the project
+      run: pnpm desktop build
+
+    - name: Upload artifact
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: onelauncher-${{ matrix.os }}
+        path: |
+          apps/desktop/target/release/onelauncher*
+          apps/desktop/target/release/onelauncher.exe
