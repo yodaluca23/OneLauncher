@@ -46,13 +46,14 @@ jobs:
 
     - name: Prep system environment for OneLauncher development (Win)
       if: matrix.os == 'windows-latest'
-      run: .\packages\scripts\setup.ps1
+      run: powershell .\packages\scripts\setup.ps1
 
     - name: Install dependencies
       run: pnpm install
 
     - name: Prepare the build
       run: pnpm prep
+      continue-on-error: true
 
     - name: Build the project
       run: pnpm desktop build
@@ -61,7 +62,6 @@ jobs:
       if: success()
       uses: actions/upload-artifact@v3
       with:
-        name: onelauncher-${{ matrix.os }}
+        name: oneLauncher-${{ matrix.os }}
         path: |
           apps/desktop/target/release/onelauncher*
-          apps/desktop/target/release/onelauncher.exe
